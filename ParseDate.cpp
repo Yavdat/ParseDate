@@ -10,22 +10,38 @@ struct Date {
     int day;
 };
 
+void EnsureNextSymbolAndSkip(stringstream& stream) {
+    if (stream.peek() != '/') {
+        // throw exception();
+        stringstream ss;
+        ss << "expected / , but has: " << char(stream.peek());
+        throw runtime_error(ss.str());
+    }
+    stream.ignore(1);
+}
+
 Date ParseDate(const string& s) {
     stringstream stream(s);
     Date date;
     stream >> date.year;
-    stream.ignore(1);
+    EnsureNextSymbolAndSkip(stream);
     stream >> date.month;
-    stream.ignore(1);
+    EnsureNextSymbolAndSkip(stream);
     stream >> date.day;
     return date;
 }
 
+
+
 int main() {
-    string date_str = "2017/01/25";
-    Date date = ParseDate(date_str);
-    cout << setw(2) << setfill('0') << date.day << '.'
-         << setw(2) << setfill('0') << date.month << '.'
-         << date.year << endl;
+    string date_str = "2017s01/25";
+    try {
+        Date date = ParseDate(date_str);
+        cout << setw(2) << setfill('0') << date.day << '.'
+             << setw(2) << setfill('0') << date.month << '.'
+             << date.year << endl;
+    } catch (exception& ex) {
+        cout << "exception happens: " << ex.what() << endl;
+    }
     return 0;
 }
